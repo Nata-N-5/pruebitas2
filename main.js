@@ -130,15 +130,15 @@ renderer.setAnimationLoop(animate);
 //PUNTERO XD
 const crosshair = document.createElement('div');
 crosshair.style.position = 'fixed';
-crosshair.style.width = '200px';
-crosshair.style.height = '200px';
+crosshair.style.width = '120px';
+crosshair.style.height = '120px';
 crosshair.style.pointerEvents = 'none';
 crosshair.style.zIndex = '1000';
 crosshair.style.left = '0px';
 crosshair.style.top = '0px';
 
 crosshair.innerHTML = `
-  <svg width="200" height="200" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+  <svg width="120" height="120" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
     <!-- Círculos concéntricos -->
     <circle cx="50" cy="50" r="40" stroke="limegreen" stroke-width="2" fill="none"/>
     <circle cx="50" cy="50" r="30" stroke="limegreen" stroke-width="2" fill="none"/>
@@ -163,10 +163,11 @@ document.body.appendChild(crosshair);
 
 // Sigue al puntero
 window.addEventListener('pointermove', (event) => {
-  crosshair.style.left = (event.clientX - 100) + 'px';
-  crosshair.style.top = (event.clientY - 100) + 'px';
+  crosshair.style.left = (event.clientX - 60) + 'px';
+  crosshair.style.top = (event.clientY - 60) + 'px';
 });
 
 // Oculta el puntero original
 renderer.domElement.style.cursor = 'none';
+
 
