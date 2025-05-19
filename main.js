@@ -125,49 +125,91 @@ renderer.setAnimationLoop(animate);
 
 
 
-
-
-//PUNTERO XD
+// --- Puntero SVG para modo desktop ---
 const crosshair = document.createElement('div');
 crosshair.style.position = 'fixed';
-crosshair.style.width = '120px';
-crosshair.style.height = '120px';
+crosshair.style.width = '60px';
+crosshair.style.height = '60px';
 crosshair.style.pointerEvents = 'none';
 crosshair.style.zIndex = '1000';
 crosshair.style.left = '0px';
 crosshair.style.top = '0px';
 
 crosshair.innerHTML = `
-  <svg width="120" height="120" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
-    <!-- Círculos concéntricos -->
+  <svg width="60" height="60" viewBox="0 0 100 100">
     <circle cx="50" cy="50" r="40" stroke="limegreen" stroke-width="2" fill="none"/>
     <circle cx="50" cy="50" r="30" stroke="limegreen" stroke-width="2" fill="none"/>
     <circle cx="50" cy="50" r="15" stroke="limegreen" stroke-width="2" fill="none"/>
-
-    <!-- Corte líneas verticales -->
     <line x1="50" y1="0" x2="50" y2="20" stroke="limegreen" stroke-width="2"/>
     <line x1="50" y1="80" x2="50" y2="100" stroke="limegreen" stroke-width="2"/>
-
-    <!-- Corte líneas horizontales -->
     <line x1="0" y1="50" x2="20" y2="50" stroke="limegreen" stroke-width="2"/>
     <line x1="80" y1="50" x2="100" y2="50" stroke="limegreen" stroke-width="2"/>
-
-    <!-- Centro: círculo pequeño + cruz -->
     <circle cx="50" cy="50" r="5" stroke="limegreen" stroke-width="2" fill="none"/>
     <line x1="50" y1="45" x2="50" y2="55" stroke="limegreen" stroke-width="2"/>
     <line x1="45" y1="50" x2="55" y2="50" stroke="limegreen" stroke-width="2"/>
   </svg>
 `;
-
 document.body.appendChild(crosshair);
 
-// Sigue al puntero
+// Mueve el SVG con el puntero mouse
 window.addEventListener('pointermove', (event) => {
-  crosshair.style.left = (event.clientX - 60) + 'px';
-  crosshair.style.top = (event.clientY - 60) + 'px';
+  crosshair.style.left = (event.clientX - 30) + 'px';
+  crosshair.style.top = (event.clientY - 30) + 'px';
 });
 
-// Oculta el puntero original
-renderer.domElement.style.cursor = 'none';
+// --- Puntero 3D fijo delante de la cámara (para VR sin controladores) ---
+const pointerCamGeometry = new THREE.RingGeometry(0.02, 0.03, 32);
+const pointerCamMaterial = new THREE.MeshBasicMaterial({color: 'limegreen', opacity: 0.7, transparent: true});
+const pointerCamera = new THREE.Mesh(pointerCamGeometry, pointerCamMaterial);
+pointerCamera.rotation.x = - Math.PI / 2; // plano horizontal
+pointerCamera.position.set(0, 0, -1);    // delante cámara
+pointerCamera.visible = false;            // oculto inicialmente
+camera.add(pointerCamera);
+scene.add(camera);
 
+// --- Puntero 3D pegado al controlador VR ---
+const controller = renderer.xr.getController(0);
+scene.add(controller);
+
+const pointerCtrlGeometry = new THREE.RingGeometry(0.02, 0.03, 32);
+const pointerCtrlMaterial = new THREE.MeshBasicMaterial({color: 'limegreen', opacity: 0.7, transparent: true});
+const pointerController = new THREE.Mesh(pointerCtrlGeometry, pointerCtrlMaterial);
+pointerController.rotation.x = - Math.PI / 2;
+pointerController.position.set(0, 0, -0.05); // un poco delante del controlador
+pointerController.visible = false;
+controller.add(pointerController);
+
+// --- Detectar si el controlador está conectado ---
+let controllerConnected = false;
+
+controller.addEventListener('connected', (event) => {
+  controllerConnected = true;
+  pointerController.visible = true;
+  pointerCamera.visible = false;
+});
+
+controller.addEventListener('disconnected', (event) => {
+  controllerConnected = false;
+  pointerController.visible = false;
+  pointerCamera.visible = true; // fallback a puntero cámara si está en VR
+});
+
+// --- Eventos para controlar visibilidad de punteros ---
+renderer.xr.addEventListener('sessionstart', () => {
+  crosshair.style.display = 'none';
+
+  if(controllerConnected){
+    pointerController.visible = true;
+    pointerCamera.visible = false;
+  } else {
+    pointerController.visible = false;
+    pointerCamera.visible = true;
+  }
+});
+
+renderer.xr.addEventListener('sessionend', () => {
+  crosshair.style.display = 'block';
+  pointerController.visible = false;
+  pointerCamera.visible = false;
+});
 
