@@ -32,24 +32,6 @@ const path = '/';
 
 
 
-
-const gltfLoader = new GLTFLoader();
-
-gltfLoader.load('untitled.glb', function (gltf) {
-    const model = gltf.scene;
-    model.position.set(0, 0, 0);
-    model.rotation.y = Math.PI;
-    scene.add(model);
-
-    // Esperar a que el modelo cargue y luego posicionar la cámara dentro de la cabina
-    // Ajusta estas coordenadas dependiendo de tu modelo
-  camera.position.set(0, 1, -0.2); // Ajusta estas coordenadas según tu modelo
-  
-}, undefined, function (error) {
-    console.error('Error al cargar el modelo:', error);
-});
-
-
 // Iluminación
 scene.add(new THREE.AmbientLight(0x909090));
 const pointLight = new THREE.PointLight(0xefefff, 1);
@@ -64,7 +46,7 @@ scene.add(pointLight);
 const geometry = new THREE.BoxGeometry();
 const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 const cube = new THREE.Mesh(geometry, material);
-//scene.add(cube);
+scene.add(cube);
 
 
 cube.position.set(0, 0, 0);
