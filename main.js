@@ -32,6 +32,7 @@ const path = '/';
 
 
 
+
 // Iluminación
 scene.add(new THREE.AmbientLight(0x909090));
 const pointLight = new THREE.PointLight(0xefefff, 1);
@@ -39,16 +40,13 @@ pointLight.position.set(0, 50, 0);
 scene.add(pointLight);
 
 // Cámara
-//camera.position.z = 1;
-
+camera.position.z = 3;
 
 // Cubo
 const geometry = new THREE.BoxGeometry();
 const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 const cube = new THREE.Mesh(geometry, material);
 scene.add(cube);
-
-
 cube.position.set(0, 0, 0);
 // Puntero
 let px=0;
@@ -92,8 +90,8 @@ function createPlanet() {
 
     // Desaparecer después de 5 segundos
     setTimeout(() => {
-        scene.remove(planet);//Quitando el objeto de la escena
-        planets.splice(planets.indexOf(planet), 1); //Removiendo la referencia del array
+        scene.remove(planet);
+        planets.splice(planets.indexOf(planet), 1);
     }, 5000);
 }
 
@@ -118,6 +116,7 @@ function animate() {
 }
 window.addEventListener('pointermove', onPointerMove);
 renderer.setAnimationLoop(animate);
+
 
 
 
